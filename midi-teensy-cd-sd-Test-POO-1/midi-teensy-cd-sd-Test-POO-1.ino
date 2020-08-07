@@ -1,25 +1,24 @@
 #include <HardwareSerial.h>
 
+#include <MidiApplication.h>
 #include "IMidiStream.h"
 
 #include "TeenSy_MidiStream.h"
 
-
-//***********midi in out*****************
 #include "constantes.h"
 #include "Note.h"
-#define VEL 1
+
+
+
+//***********midi in out*****************
 #include "SdFat.h"
 
 #include <Metro.h> // Include the Metro library
-//Morse morse(13);
-Metro serialMetro = Metro(10); // Instantiate an instance
-int inst_1 = 1;
-int inst_2 = 1;
-int nt_in = 0;
-int nt_out = 0;
-int vel_in = 0;
-int switch_splt = 0;
+
+
+
+// =========================================================
+
 
 // SD_FAT_TYPE = 0 for SdFat/File as defined in SdFatConfig.h,
 // 1 for FAT16/FAT32, 2 for exFAT, 3 for FAT16/FAT32 and exFAT.
@@ -50,71 +49,20 @@ ExFile file;
 #error Invalid SD_FAT_TYPE
 #endif // SD_FAT_TYPE
 
-char line[40];
-int tab[] = {12, 34, 56, 67, 45, 67, 89, 77, 88, 90, 34};
-//------------------------------------------------------------------------------
 // Store error strings in flash to save RAM.
 #define error(s) sd.errorHalt(&Serial, F(s))
-//------------------------------------------------------------------------------
-// Check for extra characters in field or find minus sign.
-char *skipSpace(char *str)
-{
-  while (isspace(*str))
-    str++;
-  return str;
-}
-//------------------------------------------------------------------------------
-bool parseLine(char *str)
-{
-  char *ptr;
 
-  // Set strtok start of line.
-  str = strtok(str, ",");
-  if (!str)
-    return false;
 
-  // Print text field.
-  Serial.println(str);
+// ====================================================================
 
-  // Subsequent calls to strtok expects a null pointer.
-  str = strtok(nullptr, ",");
-  if (!str)
-    return false;
 
-  // Convert string to long integer.
-  int32_t i32 = strtol(str, &ptr, 0);
-  if (str == ptr || *skipSpace(ptr))
-    return false;
-  Serial.println(i32);
-
-  str = strtok(nullptr, ",");
-  if (!str)
-    return false;
-
-  // strtoul accepts a leading minus with unexpected results.
-  if (*skipSpace(str) == '-')
-    return false;
-
-  // Convert string to unsigned long integer.
-  uint32_t u32 = strtoul(str, &ptr, 0);
-  if (str == ptr || *skipSpace(ptr))
-    return false;
-  Serial.println(u32);
-
-  str = strtok(nullptr, ",");
-  if (!str)
-    return false;
-
-  // Convert string to double.
-  double d = strtod(str, &ptr);
-  if (str == ptr || *skipSpace(ptr))
-    return false;
-  Serial.println(d);
-
-  // Check for extra fields.
-  return strtok(nullptr, ",") == nullptr;
-}
-//------------------------------------------------------------------------------
+Metro serialMetro = Metro(10); // Instantiate an instance
+int inst_1 = 1;
+int inst_2 = 1;
+int nt_in = 0;
+int nt_out = 0;
+int vel_in = 0;
+int switch_splt = 0;
 
 int vel_out = 0;
 float TimerMid[10000];
@@ -143,61 +91,32 @@ int Data2 = 60;
 int Data3 = 100;
 boolean nORv = Data2;
 
+IMidiStream* midiStream = NULL;
+MidiApplication* midiApplication = NULL;
+
+
+
+// ==================================================================
+
 void setup()
 {
-
-  Serial1.begin(31250); // open the serial port for MIDI
   Serial.begin(115200);
 
-  Serial1.write(192);
-  Serial1.write(0);
-  Serial1.write(0);
+  Serial1.begin(31250); // open the serial port for MIDI
 
-  Serial1.write(193);
-  Serial1.write(0);
-  Serial1.write(1);
+  // ========================================
 
-  Serial1.write(193);
-  Serial1.write(33);
+  midiStream = new TeenSy_MidiStream(&Serial1);
+  midiApplication = new MidiApplication(
+    midiStream
+  );
 
-  Serial1.write(196);
-  Serial1.write(0);
-  Serial1.write(0);
+  midiApplication->init();
 
-  Serial1.write(199);
-  Serial1.write(0);
-  Serial1.write(0);
-
-  Serial1.write(183);
-  Serial1.write(7);
-  Serial1.write(90);
-
-  Serial1.write(176);
-  Serial1.write(7);
-  Serial1.write(90);
-
-  Serial1.write(177);
-  Serial1.write(7);
-  Serial1.write(90);
-
-  Serial1.write(180);
-  Serial1.write(7);
-  Serial1.write(90);
-}
-
-void testsPOO(HardwareSerial* inputOutputStream) {
-  // int inputData = inputOutputStream->read();
-  // Serial.println(inputData);
-
-  IMidiStream* myStream = new TeenSy_MidiStream(inputOutputStream);
-  Serial.println(myStream->read());
-
-  delete myStream;
 }
 
 void loop()
 {
-
   // morse.dot();
   //*******************METRO*****************************
   if ( (play_ok == 1) || (rec_ok == 1) )
@@ -214,9 +133,7 @@ void loop()
 
   if (Serial1.available())
   {
-    // data = Serial1.read();
-
-    testsPOO(&Serial1);
+    data = midiApplication->getMidiStream()->read();
 
     //*****************************data mid********************************
     //**********************************************************************

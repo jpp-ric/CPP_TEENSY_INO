@@ -1,6 +1,6 @@
 
 //***********midi in out*****************
- #include <Note.h>
+
 #define VEL 1
 #include "SdFat.h"
 

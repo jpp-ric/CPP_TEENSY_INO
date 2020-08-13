@@ -10,7 +10,6 @@
 #include "TeenSy_MidiStream.h"
 #include "TeenSy_Displayer.h"
 
-
 //***********midi in out*****************
 #include "SdFat.h"
 
@@ -69,8 +68,7 @@ void setup()
   displayer = new TeenSy_Displayer(&Serial);
   midiStream = new TeenSy_MidiStream(&Serial1);
   midiApplication = new MidiApplication(
-      midiStream)
-  ;
+      midiStream);
   midiApplication->setDisplayer(displayer);
   midiApplication->init();
 }
@@ -78,14 +76,30 @@ void setup()
 void loop()
 {
   //*******************METRO*****************************
-  if (midiApplication->play_ok || midiApplication->rec_ok)
+  if ((midiApplication->play_loop) || (midiApplication->rec_ok))
   {
+
     if (serialMetro.check())
       midiApplication->i_count += 1 * midiApplication->x_count;
   }
   //**************** flag "play" *************
+  //Serial.println(midiApplication->i_count);
   if (midiApplication->play_ok)
   {
+    serialMetro.reset();
+    midiApplication->play_loop = true;
+    midiApplication->play_ok = false;
+    midiApplication->i_count = 0.;
+    midiApplication->midiCodeIndex = 0;
+    
+    //CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+    midiApplication->play();
+  }
+
+  if (midiApplication->play_loop)
+  {
+    //Serial.println("loop");
+    //CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
     midiApplication->play();
   }
 
@@ -96,7 +110,7 @@ void loop()
     midiApplication->handleMidiCode();
   }
 }
-
+//CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 void trsf_data_sd()
 {
   int timesSize = sizeof(midiApplication->times);
@@ -125,9 +139,9 @@ void trsf_data_sd()
   Serial.println(sizeof(midiApplication->times[0]));
   for (int i = 0; i < sizeof(midiApplication->times) / sizeof(midiApplication->times[0]); i++)
   {
-  Serial.println(sizeof(midiApplication->times));
-  Serial.println(sizeof(midiApplication->times[0]));
-  Serial.println("-----\r\n");
+    Serial.println(sizeof(midiApplication->times));
+    Serial.println(sizeof(midiApplication->times[0]));
+    Serial.println("-----\r\n");
 
     file.println(midiApplication->times[i]); //timer
     delay(2);

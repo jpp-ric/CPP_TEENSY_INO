@@ -77,17 +77,17 @@ void setup()
 
 void loop()
 {
-  //*******************METRO*****************************
-  if (midiApplication->play_ok || midiApplication->rec_ok)
-  {
-    if (serialMetro.check())
-      midiApplication->i_count += 1 * midiApplication->x_count;
-  }
-  //**************** flag "play" *************
-  if (midiApplication->play_ok)
-  {
-    midiApplication->play();
-  }
+  // //*******************METRO*****************************
+  // if (midiApplication->play_ok || midiApplication->rec_ok)
+  // {
+  //   if (serialMetro.check())
+  //     midiApplication->i_count += 1 * midiApplication->x_count;
+  // }
+  // //**************** flag "play" *************
+  // if (midiApplication->play_ok)
+  // {
+  //   midiApplication->play();
+  // }
 
   //****************************************************
 
@@ -97,95 +97,95 @@ void loop()
   }
 }
 
-void trsf_data_sd()
-{
-  int timesSize = sizeof(midiApplication->times);
-  char linec[timesSize];
-  // Initialize the SD.
-  if (!sd.begin(SD_CONFIG))
-  {
-    sd.initErrorHalt(&Serial);
-    return;
-  }
-  // Remove any existing file.
-  if (sd.exists("ReadCsvDemo.csv"))
-  {
-    sd.remove("ReadCsvDemo.csv");
-  }
-  // Create the file.
-  if (!file.open("ReadCsvDemo.csv", FILE_WRITE))
-  {
-    error("open failed");
-    exit(EXIT_FAILURE);
-  }
-  file.rewind();
-  //************************transfert debute ici****************
-  //******************tab > sd card*****************************
-  Serial.println(sizeof(midiApplication->times));
-  Serial.println(sizeof(midiApplication->times[0]));
-  for (int i = 0; i < sizeof(midiApplication->times) / sizeof(midiApplication->times[0]); i++)
-  {
-  Serial.println(sizeof(midiApplication->times));
-  Serial.println(sizeof(midiApplication->times[0]));
-  Serial.println("-----\r\n");
+// void trsf_data_sd()
+// {
+//   int timesSize = sizeof(midiApplication->times);
+//   char linec[timesSize];
+//   // Initialize the SD.
+//   if (!sd.begin(SD_CONFIG))
+//   {
+//     sd.initErrorHalt(&Serial);
+//     return;
+//   }
+//   // Remove any existing file.
+//   if (sd.exists("ReadCsvDemo.csv"))
+//   {
+//     sd.remove("ReadCsvDemo.csv");
+//   }
+//   // Create the file.
+//   if (!file.open("ReadCsvDemo.csv", FILE_WRITE))
+//   {
+//     error("open failed");
+//     exit(EXIT_FAILURE);
+//   }
+//   file.rewind();
+//   //************************transfert debute ici****************
+//   //******************tab > sd card*****************************
+//   Serial.println(sizeof(midiApplication->times));
+//   Serial.println(sizeof(midiApplication->times[0]));
+//   for (int i = 0; i < sizeof(midiApplication->times) / sizeof(midiApplication->times[0]); i++)
+//   {
+//   Serial.println(sizeof(midiApplication->times));
+//   Serial.println(sizeof(midiApplication->times[0]));
+//   Serial.println("-----\r\n");
 
-    file.println(midiApplication->times[i]); //timer
-    delay(2);
-    file.println(midiApplication->commands[i]); //timer
-    delay(2);
-    file.println(midiApplication->data2s[i]); //timer
-    delay(2);
-    file.println(midiApplication->data3s[i]); //timer
-    if (midiApplication->times[i + 1] == 0.)
-    {
-      file.println("f"); //timer
-      break;
-    }
-  }
+//     file.println(midiApplication->times[i]); //timer
+//     delay(2);
+//     file.println(midiApplication->commands[i]); //timer
+//     delay(2);
+//     file.println(midiApplication->data2s[i]); //timer
+//     delay(2);
+//     file.println(midiApplication->data3s[i]); //timer
+//     if (midiApplication->times[i + 1] == 0.)
+//     {
+//       file.println("f"); //timer
+//       break;
+//     }
+//   }
 
-  /*  for (int i=0;i<sizeof(midiApplication->commands)/sizeof(midiApplication->commands[0]);i++) {
-    file.println(midiApplication->commands[i]);//statut
-    delay(5);
-    if(midiApplication->commands[i+1]== 0. ){
-    file.println("f");//timer
-    break;
-    } 
-   }
+//   /*  for (int i=0;i<sizeof(midiApplication->commands)/sizeof(midiApplication->commands[0]);i++) {
+//     file.println(midiApplication->commands[i]);//statut
+//     delay(5);
+//     if(midiApplication->commands[i+1]== 0. ){
+//     file.println("f");//timer
+//     break;
+//     } 
+//    }
 
-    for (int i=0;i<sizeof(midiApplication->data2s)/sizeof(midiApplication->data2s[0]);i++) {
-    file.println(midiApplication->data2s[i]);//note
-    delay(5);
-    if(midiApplication->data2s[i+1]== 0. ){
-    file.println("f");//timer
-    break;
-    } 
-   }
+//     for (int i=0;i<sizeof(midiApplication->data2s)/sizeof(midiApplication->data2s[0]);i++) {
+//     file.println(midiApplication->data2s[i]);//note
+//     delay(5);
+//     if(midiApplication->data2s[i+1]== 0. ){
+//     file.println("f");//timer
+//     break;
+//     } 
+//    }
 
-    for (int i=0;i<sizeof(midiApplication->data3s)/sizeof(midiApplication->data3s[0]);i++) {
-    file.println(midiApplication->data3s[i]);//velocity
-    delay(5);
-    if(midiApplication->commands[i+1]== 0. ){
-    file.println("f");//timer
-    break;
-    } 
-   }*/
+//     for (int i=0;i<sizeof(midiApplication->data3s)/sizeof(midiApplication->data3s[0]);i++) {
+//     file.println(midiApplication->data3s[i]);//velocity
+//     delay(5);
+//     if(midiApplication->commands[i+1]== 0. ){
+//     file.println("f");//timer
+//     break;
+//     } 
+//    }*/
 
-  //*************************************************************
-  file.rewind(); //back file start
-  //*********************************
-  int j = 0;
+//   //*************************************************************
+//   file.rewind(); //back file start
+//   //*********************************
+//   int j = 0;
 
-  while (file.available())
-  {
-    j++;
-    //***********sd card > tab********************************
-    linec[j] = file.read();
-    Serial.print(linec[j]);
-    if (linec[j - 1] > 0 && linec[j] == 0)
-      exit(EXIT_FAILURE);
-  }
-  //******************************************************
-  file.close();
-  Serial.println(F("Done"));
-  return;
-}
+//   while (file.available())
+//   {
+//     j++;
+//     //***********sd card > tab********************************
+//     linec[j] = file.read();
+//     Serial.print(linec[j]);
+//     if (linec[j - 1] > 0 && linec[j] == 0)
+//       exit(EXIT_FAILURE);
+//   }
+//   //******************************************************
+//   file.close();
+//   Serial.println(F("Done"));
+//   return;
+// }

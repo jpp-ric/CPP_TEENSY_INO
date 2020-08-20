@@ -52,8 +52,8 @@ ExFile file;
 #define error(s) sd.errorHalt(&Serial, F(s))
 
 // ====================================================================
-Metro serialMetro_1 = Metro(5);
-Metro serialMetro = Metro(5); // Instantiate an instance
+//Metro serialMetro_1 = Metro(5);
+//Metro serialMetro = Metro(5); // Instantiate an instance
 IMidiStream *midiStream = NULL;
 IDisplayer *displayer = NULL;
 MidiApplication *midiApplication = NULL;
@@ -135,7 +135,7 @@ void loop()
 void Ticks_mid()
 {
   if ((midiApplication->play_loop) || (midiApplication->start_rec_1)||
-  (midiApplication->rec_2_ok)|| (midiApplication->play_2_ok))
+  (midiApplication->start_rec_2)|| (midiApplication->play_2_ok))
   
   {
 
@@ -147,7 +147,7 @@ void Ticks_mid()
 //CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 void trsf_data_sd()
 {
-  int timesSize = sizeof(midiApplication->time_1s);
+  int timesSize = sizeof(midiApplication->time1s);
   char linec[timesSize];
   // Initialize the SD.
   if (!sd.begin(SD_CONFIG))
@@ -169,22 +169,22 @@ void trsf_data_sd()
   file.rewind();
   //************************transfert debute ici****************
   //******************tab > sd card*****************************
-  Serial.println(sizeof(midiApplication->time_1s));
-  Serial.println(sizeof(midiApplication->time_1s[0]));
-  for (int i = 0; i < sizeof(midiApplication->time_1s) / sizeof(midiApplication->time_1s[0]); i++)
+  Serial.println(sizeof(midiApplication->time1s));
+  Serial.println(sizeof(midiApplication->time1s[0]));
+  for (int i = 0; i < sizeof(midiApplication->time1s) / sizeof(midiApplication->time1s[0]); i++)
   {
-    Serial.println(sizeof(midiApplication->time_1s));
-    Serial.println(sizeof(midiApplication->time_1s[0]));
+    Serial.println(sizeof(midiApplication->time1s));
+    Serial.println(sizeof(midiApplication->time1s[0]));
     Serial.println("-----\r\n");
 
-    file.println(midiApplication->time_1s[i]); //timer
+    file.println(midiApplication->time1s[i]); //timer
     delay(2);
-    file.println(midiApplication->command_1s[i]); //timer
+    file.println(midiApplication->command1s[i]); //timer
     delay(2);
-    file.println(midiApplication->data2_1s[i]); //timer
+    file.println(midiApplication->data21s[i]); //timer
     delay(2);
-    file.println(midiApplication->data3_1s[i]); //timer
-    if (midiApplication->time_1s[i + 1] == 0.)
+    file.println(midiApplication->data31s[i]); //timer
+    if (midiApplication->time1s[i + 1] == 0.)
     {
       file.println("f"); //timer
       break;

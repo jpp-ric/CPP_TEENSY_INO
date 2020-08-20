@@ -92,37 +92,41 @@ void loop()
   }*/
   //**************** flag "play" *************
   //Serial.println(midiApplication->i_count);
-  if (midiApplication->Play_1ok)
+  if (midiApplication->play_1_ok)
   {
     midiApplication->Ticks = 0; //reset ticks
     //serialMetro_1.reset();
     //serialMetro.reset();
     midiApplication->play_loop = true;
-    midiApplication->Play_1ok = false;
+    midiApplication->play_1_ok = false;
     
     midiApplication->midiCodeIndex_1 = 0;
-
-    //CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-    
+    midiApplication->midiCodeIndex_2 = 0;
+    midiApplication->midiCodeIndex_3 = 0;    
     midiApplication->play_1();
   } 
-  
+  //=====================================================
   if (midiApplication->play_loop)
   {    
-    //CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-    //Serial.println("play loop");
+        //Serial.println("play loop");
     midiApplication->play_1();
         
   }
-
+  //==================================================
   if (midiApplication->play_2_ok)
   {    
-    //CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
-    //Serial.println("play loop");
+        //Serial.println("play loop");
     midiApplication->play_2();
         
   }
- 
+ //==============================================================
+ if (midiApplication->play_3_ok)
+  {    
+        //Serial.println("play loop");
+    midiApplication->play_3();
+        
+  }
+ //==============================================================
 
   //****************************************************
 
@@ -135,7 +139,8 @@ void loop()
 void Ticks_mid()
 {
   if ((midiApplication->play_loop) || (midiApplication->start_rec_1)||
-  (midiApplication->start_rec_2)|| (midiApplication->play_2_ok))
+  (midiApplication->start_rec_2) || (midiApplication->play_2_ok)||
+  (midiApplication->play_3_ok)||(midiApplication->start_rec_3))
   
   {
 

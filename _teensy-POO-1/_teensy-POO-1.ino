@@ -12,7 +12,6 @@
 #include "TeenSy_MidiStream.h"
 #include "TeenSy_Displayer.h"
 
-
 //***********midi in out*****************
 #include "SdFat.h"
 
@@ -65,6 +64,7 @@ IntervalTimer myTimer; //type interrups timer
 
 void setup()
 {
+
   Serial.begin(115200);
 
   Serial1.begin(31250); // open the serial port for MIDI

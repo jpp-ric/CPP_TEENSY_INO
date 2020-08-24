@@ -75,8 +75,7 @@ void setup()
   // ========================================
   displayer = new TeenSy_Displayer(&Serial);
   midiStream = new TeenSy_MidiStream(&Serial1);
-  midiApplication = new MidiApplication(
-      midiStream);
+  midiApplication = new MidiApplication(midiStream);
   midiApplication->setDisplayer(displayer);
   midiApplication->init();
 }

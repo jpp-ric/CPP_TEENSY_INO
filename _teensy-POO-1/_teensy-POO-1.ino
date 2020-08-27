@@ -53,7 +53,6 @@ ExFile file;
 
 // ====================================================================
 Metro VelocityDecreasing = Metro(10); // replace runing velocity
-//Metro serialMetro = Metro(5); // Instantiate an instance
 IMidiStream *midiStream = NULL;
 IDisplayer *displayer = NULL;
 MidiApplication *midiApplication = NULL;
@@ -61,17 +60,14 @@ MidiApplication *midiApplication = NULL;
 // ==================================================================
 
 IntervalTimer myTimer; //type interrups timer
-//IntervalTimer VelocityDecreasing;//for replace runing velocity
+
 void setup()
 {
-  
 
   Serial.begin(115200);
 
   Serial1.begin(31250); // open the serial port for MIDI
   myTimer.begin(Ticks_mid, 15000);
-  //VelocityDecreasing.begin(Veloc_decr,150000);
-
   // ========================================
   displayer = new TeenSy_Displayer(&Serial);
   midiStream = new TeenSy_MidiStream(&Serial1);
@@ -89,6 +85,7 @@ void loop()
 
     if (!midiApplication->Bang)//permanent alternate 0/1 like pulse generator 
     {
+      //midiApplication->Ticks +=1;
       midiApplication->Bang = true;//1
     }
     else
@@ -104,25 +101,27 @@ void loop()
       }
     }
   }
- 
-  //**************** flag "play1" *************
-  //Serial.println(midiApplication->Bang);
+  //**************** flag "play" *************
+  //Serial.println(midiApplication->i_count);
   if (midiApplication->play_1_ok)
   {
     midiApplication->Ticks = 0; //reset ticks
+    
     midiApplication->play_loop = true;
     midiApplication->play_1_ok = false;
-
+    
     midiApplication->midiCodeIndex_1 = 0;
     midiApplication->midiCodeIndex_2 = 0;
-    midiApplication->midiCodeIndex_3 = 0;
+    midiApplication->midiCodeIndex_3 = 0;    
     midiApplication->play_1();
-  }
+  } 
+
   //**************** flag "play2" *************
   //Serial.println(midiApplication->Bang);
   if (midiApplication->play_2_ok)
   {
-    if(!midiApplication->play_loop2){
+    if(!midiApplication->play_loop)
+    {
     midiApplication->Ticks = 0; //reset ticks
     midiApplication->midiCodeIndex_2 = 0;
     }
@@ -134,7 +133,8 @@ void loop()
             
     midiApplication->play_2();
   } 
-//**************** flag "play2" *************
+
+  //**************** flag "play3" *************
   //Serial.println(midiApplication->Bang);
   if (midiApplication->play_3_ok)
   {
@@ -150,12 +150,14 @@ void loop()
     midiApplication->play_3();
   } 
 
+
   //=====================================================
   if (midiApplication->play_loop)
-  {
+  {    
+        //Serial.println("play loop");
     midiApplication->play_1();
+        
   }
-  //==================================================
   if (midiApplication->play_loop2)
   {
     midiApplication->play_2();
@@ -168,8 +170,8 @@ void loop()
     //Serial.println("play loop");
     midiApplication->play_3();
   }
-  //==============================================================
-
+  //==================================================
+  
   //****************************************************
 
   if (Serial1.available())
@@ -181,9 +183,10 @@ void loop()
 void Ticks_mid()
 {
   if ((midiApplication->play_loop) || (midiApplication->start_rec_1) ||
-      (midiApplication->start_rec_2) || (midiApplication->play_2_ok) ||
+      (midiApplication->start_rec_2) ||( midiApplication->play_2_ok) ||
       (midiApplication->play_3_ok) || (midiApplication->start_rec_3)||
-     (midiApplication->play_loop2)||(midiApplication->play_loop3))
+     (midiApplication->play_loop2)||(midiApplication->play_loop3)||
+     ( midiApplication->play_1_ok))
 
   {
 

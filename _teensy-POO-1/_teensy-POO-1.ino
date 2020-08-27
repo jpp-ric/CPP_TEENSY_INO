@@ -52,8 +52,7 @@ ExFile file;
 #define error(s) sd.errorHalt(&Serial, F(s))
 
 // ====================================================================
-//Metro serialMetro_1 = Metro(5);
-//Metro serialMetro = Metro(5); // Instantiate an instance
+Metro VelocityDecreasing = Metro(10); // replace runing velocity
 IMidiStream *midiStream = NULL;
 IDisplayer *displayer = NULL;
 MidiApplication *midiApplication = NULL;
@@ -79,23 +78,35 @@ void setup()
 
 void loop()
 {
-  /* //*******************METRO*****************************
-  if ((midiApplication->play_loop) || (midiApplication->rec_ok))
+  //*******************METRO*****************************
+  
+  if (VelocityDecreasing.check())
   {
-      if (serialMetro_1.check())
-      midiApplication->i_count_2 += 1 * midiApplication->x_count;
 
-    if (serialMetro.check())
-      midiApplication->i_count += 1 * midiApplication->x_count;
-      
-  }*/
+    if (!midiApplication->Bang)//permanent alternate 0/1 like pulse generator 
+    {
+      //midiApplication->Ticks +=1;
+      midiApplication->Bang = true;//1
+    }
+    else
+    {
+      midiApplication->Bang = false;//0
+    }
+
+    for (int index_vel_run = 0; index_vel_run < 100; index_vel_run ++)
+    {
+      if (midiApplication->X_velocitych1[index_vel_run] > 0)
+      {
+        midiApplication->X_velocitych1[index_vel_run] -= 1; //permanent decraese velocity 
+      }
+    }
+  }
   //**************** flag "play" *************
   //Serial.println(midiApplication->i_count);
   if (midiApplication->play_1_ok)
   {
     midiApplication->Ticks = 0; //reset ticks
-    //serialMetro_1.reset();
-    //serialMetro.reset();
+    
     midiApplication->play_loop = true;
     midiApplication->play_1_ok = false;
     
@@ -104,6 +115,42 @@ void loop()
     midiApplication->midiCodeIndex_3 = 0;    
     midiApplication->play_1();
   } 
+
+  //**************** flag "play2" *************
+  //Serial.println(midiApplication->Bang);
+  if (midiApplication->play_2_ok)
+  {
+    if(!midiApplication->play_loop)
+    {
+    midiApplication->Ticks = 0; //reset ticks
+    midiApplication->midiCodeIndex_2 = 0;
+    }
+    
+    midiApplication->play_loop2 = true;
+    midiApplication->play_2_ok = false;
+    
+    
+            
+    midiApplication->play_2();
+  } 
+
+  //**************** flag "play3" *************
+  //Serial.println(midiApplication->Bang);
+  if (midiApplication->play_3_ok)
+  {
+    if(!midiApplication->play_loop){
+    midiApplication->Ticks = 0; //reset ticks
+    midiApplication->midiCodeIndex_3 = 0;
+    }
+    midiApplication->play_loop3 = true;
+    midiApplication->play_3_ok = false;
+    
+    
+            
+    midiApplication->play_3();
+  } 
+
+
   //=====================================================
   if (midiApplication->play_loop)
   {    
@@ -111,22 +158,20 @@ void loop()
     midiApplication->play_1();
         
   }
-  //==================================================
-  if (midiApplication->play_2_ok)
-  {    
-        //Serial.println("play loop");
+  if (midiApplication->play_loop2)
+  {
     midiApplication->play_2();
-        
   }
- //==============================================================
- if (midiApplication->play_3_ok)
-  {    
-        //Serial.println("play loop");
+  //===============================================
+  
+  //==============================================================
+  if (midiApplication->play_loop3)
+  {
+    //Serial.println("play loop");
     midiApplication->play_3();
-        
   }
- //==============================================================
-
+  //==================================================
+  
   //****************************************************
 
   if (Serial1.available())
@@ -137,10 +182,12 @@ void loop()
 //************interrups function***********
 void Ticks_mid()
 {
-  if ((midiApplication->play_loop) || (midiApplication->start_rec_1)||
-  (midiApplication->start_rec_2) || (midiApplication->play_2_ok)||
-  (midiApplication->play_3_ok)||(midiApplication->start_rec_3))
-  
+  if ((midiApplication->play_loop) || (midiApplication->start_rec_1) ||
+      (midiApplication->start_rec_2) ||( midiApplication->play_2_ok) ||
+      (midiApplication->play_3_ok) || (midiApplication->start_rec_3)||
+     (midiApplication->play_loop2)||(midiApplication->play_loop3)||
+     ( midiApplication->play_1_ok))
+
   {
 
     midiApplication->Ticks += 1; //incr ticks

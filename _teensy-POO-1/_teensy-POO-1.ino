@@ -150,6 +150,20 @@ void loop()
     midiApplication->play_3();
   } 
 
+  if (midiApplication->play_4_ok)
+  {
+    if(!midiApplication->play_loop){
+    midiApplication->Ticks = 0; //reset ticks
+    midiApplication->midiCodeIndex_4 = 0;
+    }
+    midiApplication->play_loop4 = true;
+    midiApplication->play_4_ok = false;
+    
+    
+            
+    midiApplication->play_4();
+  } 
+
 
   //=====================================================
   if (midiApplication->play_loop)
@@ -171,6 +185,11 @@ void loop()
     midiApplication->play_3();
   }
   //==================================================
+  if (midiApplication->play_loop4)
+  {
+    //Serial.println("play loop");
+    midiApplication->play_4();
+  }
   
   //****************************************************
 
@@ -186,7 +205,8 @@ void Ticks_mid()
       (midiApplication->start_rec_2) ||( midiApplication->play_2_ok) ||
       (midiApplication->play_3_ok) || (midiApplication->start_rec_3)||
      (midiApplication->play_loop2)||(midiApplication->play_loop3)||
-     ( midiApplication->play_1_ok))
+     ( midiApplication->play_1_ok)||(midiApplication->play_loop4)||
+     ( midiApplication->play_4_ok)||(midiApplication->start_rec_4))
 
   {
 

@@ -144,12 +144,15 @@ void loop()
     }
     midiApplication->play_loop3 = true;
     midiApplication->play_3_ok = false;
-    
-    
-            
+                
     midiApplication->play_3();
-  } 
-
+  }
+   if (midiApplication->play_loop3)
+  {
+    //Serial.println("play loop");
+    midiApplication->play_3();
+  }
+//=============================================================
   if (midiApplication->play_4_ok)
   {
     if(!midiApplication->play_loop){
@@ -179,11 +182,7 @@ void loop()
   //===============================================
   
   //==============================================================
-  if (midiApplication->play_loop3)
-  {
-    //Serial.println("play loop");
-    midiApplication->play_3();
-  }
+  
   //==================================================
   if (midiApplication->play_loop4)
   {

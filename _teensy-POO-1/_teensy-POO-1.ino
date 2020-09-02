@@ -78,26 +78,50 @@ void setup()
 
 void loop()
 {
+
+  if (midiApplication->start_rec_1 || midiApplication->start_rec_2 ||
+  midiApplication->start_rec_3 || midiApplication->start_rec_4 ||
+   midiApplication->start_rec_Trk5)
+  {
+  midiApplication->FlashingLed();
+  }
+  //============flashing led==============
+  if (!midiApplication->TimerLed)
+  {
+    
+    digitalWrite(13, LOW);
+  }
+  if (midiApplication->TimerLed)
+  {
+    
+
+    digitalWrite(13, HIGH);
+  }
+  //==========================================
+
   //*******************METRO*****************************
-  
+
+  //midiApplication->StartRecTrack5();
+  //midiApplication->StartStopPlayTrk5();
+
   if (VelocityDecreasing.check())
   {
 
-    if (!midiApplication->Bang)//permanent alternate 0/1 like pulse generator 
+    if (!midiApplication->Bang) //permanent alternate 0/1 like pulse generator
     {
       //midiApplication->Ticks +=1;
-      midiApplication->Bang = true;//1
+      midiApplication->Bang = true; //1
     }
     else
     {
-      midiApplication->Bang = false;//0
+      midiApplication->Bang = false; //0
     }
 
-    for (int index_vel_run = 0; index_vel_run < 100; index_vel_run ++)
+    for (int index_vel_run = 0; index_vel_run < 100; index_vel_run++)
     {
       if (midiApplication->X_velocitych1[index_vel_run] > 0)
       {
-        midiApplication->X_velocitych1[index_vel_run] -= 1; //permanent decraese velocity 
+        midiApplication->X_velocitych1[index_vel_run] -= 1; //permanent decraese velocity
       }
     }
   }
@@ -106,90 +130,107 @@ void loop()
   if (midiApplication->play_1_ok)
   {
     midiApplication->Ticks = 0; //reset ticks
-    
+
     midiApplication->play_loop = true;
     midiApplication->play_1_ok = false;
-    
+
     midiApplication->midiCodeIndex_1 = 0;
     midiApplication->midiCodeIndex_2 = 0;
-    midiApplication->midiCodeIndex_3 = 0;    
+    midiApplication->midiCodeIndex_3 = 0;
     midiApplication->play_1();
-  } 
+  }
 
   //**************** flag "play2" *************
   //Serial.println(midiApplication->Bang);
   if (midiApplication->play_2_ok)
   {
-    if(!midiApplication->play_loop)
+    if (!midiApplication->play_loop)
     {
-    midiApplication->Ticks = 0; //reset ticks
-    midiApplication->midiCodeIndex_2 = 0;
+      midiApplication->Ticks = 0; //reset ticks
+      midiApplication->midiCodeIndex_2 = 0;
     }
-    
+
     midiApplication->play_loop2 = true;
     midiApplication->play_2_ok = false;
-    
-    
-            
+
     midiApplication->play_2();
-  } 
+  }
 
   //**************** flag "play3" *************
   //Serial.println(midiApplication->Bang);
   if (midiApplication->play_3_ok)
   {
-    if(!midiApplication->play_loop){
-    midiApplication->Ticks = 0; //reset ticks
-    midiApplication->midiCodeIndex_3 = 0;
+    if (!midiApplication->play_loop)
+    {
+      midiApplication->Ticks = 0; //reset ticks
+      midiApplication->midiCodeIndex_3 = 0;
     }
     midiApplication->play_loop3 = true;
     midiApplication->play_3_ok = false;
-                
+
     midiApplication->play_3();
   }
-   if (midiApplication->play_loop3)
+  if (midiApplication->play_loop3)
   {
     //Serial.println("play loop");
     midiApplication->play_3();
   }
-//=============================================================
+  //=============================================================
   if (midiApplication->play_4_ok)
   {
-    if(!midiApplication->play_loop){
-    midiApplication->Ticks = 0; //reset ticks
-    midiApplication->midiCodeIndex_4 = 0;
+    if (!midiApplication->play_loop)
+    {
+      midiApplication->Ticks = 0; //reset ticks
+      midiApplication->midiCodeIndex_4 = 0;
     }
     midiApplication->play_loop4 = true;
     midiApplication->play_4_ok = false;
-    
-    
-            
-    midiApplication->play_4();
-  } 
 
+    midiApplication->play_4();
+  }
 
   //=====================================================
   if (midiApplication->play_loop)
-  {    
-        //Serial.println("play loop");
+  {
+    //Serial.println("play loop");
     midiApplication->play_1();
-        
   }
   if (midiApplication->play_loop2)
   {
     midiApplication->play_2();
   }
   //===============================================
-  
+
   //==============================================================
-  
+
   //==================================================
   if (midiApplication->play_loop4)
   {
     //Serial.println("play loop");
     midiApplication->play_4();
   }
-  
+  //==================================================
+  //**************** flag playTrk5 *************
+
+  if (midiApplication->play_Trk5)
+  {
+    if (!midiApplication->play_loop)
+    {
+      midiApplication->Ticks = 0; //reset ticks
+      midiApplication->midiCodeIndex_Trk5 = 0;
+    }
+    midiApplication->play_loop_Trk5 = true;
+    midiApplication->play_Trk5 = false;
+
+    midiApplication->playTrk5();
+  }
+  if (midiApplication->play_loop_Trk5)
+  {
+    //midiApplication->StartStopPlayTrk5();
+    midiApplication->playTrk5();
+  }
+  //================================================
+
   //****************************************************
 
   if (Serial1.available())
@@ -201,15 +242,17 @@ void loop()
 void Ticks_mid()
 {
   if ((midiApplication->play_loop) || (midiApplication->start_rec_1) ||
-      (midiApplication->start_rec_2) ||( midiApplication->play_2_ok) ||
-      (midiApplication->play_3_ok) || (midiApplication->start_rec_3)||
-     (midiApplication->play_loop2)||(midiApplication->play_loop3)||
-     ( midiApplication->play_1_ok)||(midiApplication->play_loop4)||
-     ( midiApplication->play_4_ok)||(midiApplication->start_rec_4))
+      (midiApplication->start_rec_2) || (midiApplication->play_2_ok) ||
+      (midiApplication->play_3_ok) || (midiApplication->start_rec_3) ||
+      (midiApplication->play_loop2) || (midiApplication->play_loop3) ||
+      (midiApplication->play_1_ok) || (midiApplication->play_loop4) ||
+      (midiApplication->play_4_ok) || (midiApplication->start_rec_4) ||
+      (midiApplication->play_loop_Trk5) || (midiApplication->start_rec_Trk5) ||
+      (midiApplication->play_Trk5))
 
   {
 
-    midiApplication->Ticks += 1; //incr ticks
+    midiApplication->Ticks += (1 * midiApplication->x_count); //incr ticks
     //Serial.println(midiApplication->Ticks);
   }
 }

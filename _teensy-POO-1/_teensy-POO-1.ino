@@ -60,6 +60,7 @@ MidiApplication *midiApplication = NULL;
 // ==================================================================
 
 IntervalTimer myTimer; //type interrups timer
+ 
 
 void setup()
 {
@@ -67,7 +68,8 @@ void setup()
   Serial.begin(115200);
 
   Serial1.begin(31250); // open the serial port for MIDI
-  myTimer.begin(Ticks_mid, 15000);
+  myTimer.begin(Ticks_mid, 12000);
+   
   // ========================================
   displayer = new TeenSy_Displayer(&Serial);
   midiStream = new TeenSy_MidiStream(&Serial1);
@@ -78,6 +80,10 @@ void setup()
 
 void loop()
 {
+  if(midiApplication->SwitchMetro)
+  {
+  midiApplication->Metronome();
+  }
 
   if (midiApplication->start_rec_1 || midiApplication->start_rec_2 ||
   midiApplication->start_rec_3 || midiApplication->start_rec_4 ||
@@ -93,8 +99,7 @@ void loop()
   }
   if (midiApplication->TimerLed)
   {
-    
-
+   
     digitalWrite(13, HIGH);
   }
   //==========================================
@@ -109,7 +114,7 @@ void loop()
 
     if (!midiApplication->Bang) //permanent alternate 0/1 like pulse generator
     {
-      //midiApplication->Ticks +=1;
+      //midiApplication->beat += 1.0;
       midiApplication->Bang = true; //1
     }
     else
@@ -117,16 +122,16 @@ void loop()
       midiApplication->Bang = false; //0
     }
 
-    for (int index_vel_run = 0; index_vel_run < 100; index_vel_run++)
+    /*for (int index_vel_run = 0; index_vel_run < 100; index_vel_run++)
     {
       if (midiApplication->X_velocitych1[index_vel_run] > 0)
       {
         midiApplication->X_velocitych1[index_vel_run] -= 1; //permanent decraese velocity
       }
-    }
+    }*/
   }
   //**************** flag "play" *************
-  //Serial.println(midiApplication->i_count);
+  
   if (midiApplication->play_1_ok)
   {
     midiApplication->Ticks = 0; //reset ticks
@@ -253,11 +258,14 @@ void Ticks_mid()
   {
 
     midiApplication->Ticks += (1 * midiApplication->x_count); //incr ticks
-    //Serial.println(midiApplication->Ticks);
+    midiApplication->beat1 += (1 * midiApplication->x_count); 
+   
+    
   }
 }
+
 //=========================================
-//CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
+//Serial.println(midiApplication->Ticks);
 void trsf_data_sd()
 {
   int timesSize = sizeof(midiApplication->time1s);

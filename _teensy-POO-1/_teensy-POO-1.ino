@@ -258,8 +258,8 @@ void Ticks_mid()
   {
 
     midiApplication->Ticks += (1 * midiApplication->x_count); //incr ticks
-    midiApplication->beat1 += (1 * midiApplication->x_count); 
-   
+    midiApplication->beat1 += (1 * midiApplication->x_count);
+    midiApplication->TicksTrk6 += (1 * midiApplication->x_count);
     
   }
 }

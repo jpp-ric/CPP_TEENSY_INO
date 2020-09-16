@@ -60,7 +60,6 @@ MidiApplication *midiApplication = NULL;
 // ==================================================================
 
 IntervalTimer myTimer; //type interrups timer
- 
 
 void setup()
 {
@@ -69,7 +68,7 @@ void setup()
 
   Serial1.begin(31250); // open the serial port for MIDI
   myTimer.begin(Ticks_mid, 12000);
-   
+
   // ========================================
   displayer = new TeenSy_Displayer(&Serial);
   midiStream = new TeenSy_MidiStream(&Serial1);
@@ -80,26 +79,26 @@ void setup()
 
 void loop()
 {
-  if(midiApplication->SwitchMetro)
+  if (midiApplication->SwitchMetro)
   {
-  midiApplication->Metronome();
+    midiApplication->Metronome();
   }
 
   if (midiApplication->start_rec_1 || midiApplication->start_rec_2 ||
-  midiApplication->start_rec_3 || midiApplication->start_rec_4 ||
-   midiApplication->start_rec_Trk5)
+      midiApplication->start_rec_3 || midiApplication->start_rec_4 ||
+      midiApplication->start_rec_Trk5)
   {
-  midiApplication->FlashingLed();
+    midiApplication->FlashingLed();
   }
   //============flashing led==============
   if (!midiApplication->TimerLed)
   {
-    
+
     digitalWrite(13, LOW);
   }
   if (midiApplication->TimerLed)
   {
-   
+
     digitalWrite(13, HIGH);
   }
   //==========================================
@@ -131,7 +130,7 @@ void loop()
     }*/
   }
   //**************** flag "play" *************
-  
+
   if (midiApplication->play_1_ok)
   {
     midiApplication->Ticks = 0; //reset ticks
@@ -221,7 +220,7 @@ void loop()
   {
     if (!midiApplication->play_loop)
     {
-      midiApplication->Ticks = 0; //reset ticks
+      midiApplication->TicksTrk5 = 0; //reset ticks
       midiApplication->midiCodeIndex_Trk5 = 0;
     }
     midiApplication->play_loop_Trk5 = true;
@@ -251,16 +250,18 @@ void Ticks_mid()
       (midiApplication->play_3_ok) || (midiApplication->start_rec_3) ||
       (midiApplication->play_loop2) || (midiApplication->play_loop3) ||
       (midiApplication->play_1_ok) || (midiApplication->play_loop4) ||
-      (midiApplication->play_4_ok) || (midiApplication->start_rec_4) ||
-      (midiApplication->play_loop_Trk5) || (midiApplication->start_rec_Trk5) ||
-      (midiApplication->play_Trk5))
+      (midiApplication->play_4_ok) || (midiApplication->start_rec_4))
 
   {
 
     midiApplication->Ticks += (1 * midiApplication->x_count); //incr ticks
     midiApplication->beat1 += (1 * midiApplication->x_count);
-    midiApplication->TicksTrk6 += (1 * midiApplication->x_count);
-    
+  }
+  if ((midiApplication->play_loop_Trk5) || (midiApplication->start_rec_Trk5) ||
+      (midiApplication->play_Trk5))
+  {
+
+    midiApplication->TicksTrk5 += (1 * midiApplication->x_count);
   }
 }
 

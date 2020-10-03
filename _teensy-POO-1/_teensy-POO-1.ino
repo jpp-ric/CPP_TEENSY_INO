@@ -51,7 +51,8 @@ ExFile file;
 
 // Store error strings in flash to save RAM.
 #define error(s) sd.errorHalt(&Serial, F(s))
-
+//=================================================================
+  
 // ====================================================================
 //Metro VelocityDecreasing = Metro(10); // replace runing velocity
 IMidiStream *midiStream = NULL;
@@ -76,8 +77,27 @@ void setup()
   midiApplication = new MidiApplication(midiStream);
   midiApplication->setDisplayer(displayer);
   midiApplication->init();
+  //========================essainotestri==============================
+//   midiApplication->tab[0]=10;
+//  midiApplication->tab[1]=34;
+//  midiApplication->tab[2]=3;
+//  midiApplication->tab[3]=23;
+//  midiApplication->tab[4]=5;
+//  midiApplication->tab[5]=54;
+
+//  midiApplication->nbr=5;
+ 
+//   midiApplication->triFusion(0, midiApplication->nbr-1, midiApplication->tab, midiApplication->tmp);//aligne nt ordre croissant  
+ 
   
+//   for(int i = 0; i < 5; i++) 
+//    {
+//      Serial.print(midiApplication->tab[i]);
+//   }
+
+ 
 }
+//==========================================================
 
 void loop()
 {
@@ -236,7 +256,6 @@ void loop()
     midiApplication->playTrk5();
   }
   //================================================
-  
 
   //****************************************************
 
@@ -244,22 +263,99 @@ void loop()
   {
     midiApplication->handleMidiCode();
   }
+  //===============save tracks to sdcard=========================================
 
   if (midiApplication->DataMidtoSd)
   {
-    midiApplication->DataMidtoSd = false;
+    
+    if(midiApplication->isNoteOnCommand(midiApplication->command) && midiApplication->data2==88)
+    {
+      midiApplication->data2=0;
+      midiApplication->SdtoDataMid = false;
+     
+    filewrite_trk1();
+    }
+    else if (midiApplication->isNoteOnCommand(midiApplication->command) && midiApplication->data2==89 &&
+     midiApplication->data3>0)
+    {
+      midiApplication->data3=0;
+      midiApplication->SdtoDataMid = false;
+      Serial.print("ooook");
+    filewrite_trk2();
+    }
+    
+    else if (midiApplication->isNoteOnCommand(midiApplication->command) && midiApplication->data2==91)
+    {
+      midiApplication->data2=0;
+      midiApplication->SdtoDataMid = false;
+      
+    filewrite_trk3();
+    }
+    // else if (midiApplication->isNoteOnCommand(midiApplication->command) && midiApplication->data2==93)
+    // {
+     // midiApplication->data2=0;
+      
+    //   midiApplication->DataMidtoSd = false;
+    // filewrite_trk4();
+    // }
+    else if (midiApplication->isNoteOnCommand(midiApplication->command) && midiApplication->data2==95)
+    {
+      midiApplication->data2=0;
+      midiApplication->SdtoDataMid = false;
+      
+    filewrite_trk5();
+    }
 
-    filewrite();
+
+    
   }
   //=============================================
   if (midiApplication->SdtoDataMid)
   {
-    midiApplication->SdtoDataMid = false;
+    
 
-    readfile();
+    if(midiApplication->isNoteOnCommand(midiApplication->command) && midiApplication->data2==88)
+    {
+      midiApplication->data2=0;
+      midiApplication->SdtoDataMid = false;
+    readfile_trk1();
+    }
+    else if (midiApplication->isNoteOnCommand(midiApplication->command) && midiApplication->data2==89 &&
+      midiApplication->data3>0)
+    {
+      midiApplication->data3=0;
+      midiApplication->SdtoDataMid = false;
+      Serial.print("ok");
+    filewrite_trk2();
+    }
+    else if(midiApplication->isNoteOnCommand(midiApplication->command) && midiApplication->data2==91)
+    {
+      midiApplication->data2=0;
+      midiApplication->SdtoDataMid = false;
+     
+    readfile_trk3();
+    }
+    // else if (midiApplication->isNoteOnCommand(midiApplication->command) && midiApplication->data2==93)
+    // {
+     // midiApplication->data2=0;
+    //  midiApplication->SdtoDataMid = false;
+    // filewrite_trk4();
+    // }
+    else if (midiApplication->isNoteOnCommand(midiApplication->command) && midiApplication->data2==95)
+    {
+     midiApplication->data2=0;
+     
+      midiApplication->SdtoDataMid = false;
+    readfile_trk5();
+    }
+
+    
+
+
     
   }
 }
+//============================================================================
 //************interrups function***********
 void Ticks_mid()
 {
@@ -285,66 +381,12 @@ void Ticks_mid()
 //==============================================
 
 //=========================================
-//Serial.println(midiApplication->Ticks);
-void trsf_data_sd()
-{
-  int ess = 0;
-  int timesSize = sizeof(midiApplication->time1s);
-  int linec[timesSize];
-  // Initialize the SD.
-  if (!sd.begin(SD_CONFIG))
-  {
-    sd.initErrorHalt(&Serial);
-    return;
-  }
-  // Remove any existing file.
-  if (sd.exists("jppessai.cvs"))
-  {
-    sd.remove("jppessai.cvs");
-  }
-  // Create the file.
-  if (!file.open("jppessai.cvs", FILE_WRITE))
-  {
-    error("open failed");
-    exit(EXIT_FAILURE);
-  }
-  file.rewind();
-  //************************transfert debute ici****************
-  //******************tab > sd card*****************************
-  Serial.println(sizeof(midiApplication->time1s));
-  Serial.println(sizeof(midiApplication->time1s[0]));
-  for (int i = 0; i < sizeof(midiApplication->time1s) / sizeof(midiApplication->time1s[0]); i++)
-  {
-    
 
-    file.println(midiApplication->time1s[i]); //timer
-    delay(2);
-    ess = midiApplication->command1s[i]; //>> 16 & 0x000000FF;
-    //file.println(midiApplication->command1s[i] >>16 );//& 0x00000000000000FF); //timer
-    file.println(ess);
-    delay(2);
-    Serial.println(midiApplication->time1s[i]); //timer
-
-    Serial.println(ess);
-    //file.println(midiApplication->data21s[i]); //timer
-    //delay(2);
-    //file.println(midiApplication->data31s[i]); //timer
-    if (midiApplication->time1s[i + 1] == 0.)
-    {
-      file.println("f"); //timer
-      file.close();
-      Serial.println(F("Done"));
-
-      break;
-    }
-  }
-}
-//===============================================================
+//==========================filetrk1============================================================
 //======================================================
-void filewrite()
+void filewrite_trk1()
 {
-  
-
+   if(midiApplication->command1s[1] >0){
   // Initialize the SD.
   if (!sd.begin(SD_CONFIG))
   {
@@ -352,59 +394,54 @@ void filewrite()
     return;
   }
   // Remove any existing file.
-  if (sd.exists("jppessai.cvs"))
+  if (sd.exists("sdtrk1.cvs"))
   {
-    sd.remove("jppessai.cvs");
+    sd.remove("sdtrk1.cvs");
   }
   // Create the file.
-  if (!file.open("jppessai.cvs", FILE_WRITE))
+  if (!file.open("sdtrk1.cvs", FILE_WRITE))
   {
     error("open failed");
   }
-  
-  
- 
- 
-  
-  for (int i = 0; i <10000; i++)
+
+  //==============writetofilesd=================================
+  file.print(midiApplication->tempotrk1);
+    file.println("/n");
+  int i=0;
+  bool flag_write = true;
+  while (flag_write) 
   {
-    Serial.println(midiApplication->time1s[i]);
-    Serial.println(midiApplication->command1s[i]);
-    
-  file.print(midiApplication->time1s[i]);
-  file.println("/n"); 
-  
+    // Serial.println(midiApplication->time1s[i]);
+    // Serial.println(midiApplication->command1s[i]);
+    //this->x_count = midiApplication->tempo;
+     
+
+    file.print(midiApplication->time1s[i]);
+    file.println("/n");
+
     file.print(midiApplication->command1s[i]);
     file.println("/n");
 
-    delay(2);
-    
     //Serial.println(midiApplication->command1s[i]);
-    //i++;
-    if(midiApplication->command1s[i]==98)
+   
+    if (midiApplication->command1s[i] == 98)
     {
-
-    //   for (int i = 0; i < 200; i++)
-    //   {
-    //   midiApplication->time1s[i]=0;
-    // midiApplication->command1s[i]=0; 
-
-    //   }
-
+      flag_write = false;
       break;
     }
-    
+   i++;
   }
-  
-   
+
   file.close();
   Serial.println(F("Done"));
   return;
+   }
 }
 //======================readfile===========================================
-void readfile()
+void readfile_trk1()
 {
-  String  buffer;
+ 
+  String buffer;
 
   // Initialize the SD.
   if (!sd.begin(SD_CONFIG))
@@ -412,55 +449,409 @@ void readfile()
     sd.initErrorHalt(&Serial);
     return;
   }
-  
-  if (!file.open("jppessai.cvs", FILE_WRITE))
+
+  if (!file.open("sdtrk1.cvs", FILE_WRITE))
   {
     error("open failed");
   }
-   
-  
+
   //*************************************************************
-  file.rewind(); //back file start  
-  
-  int i = 0;  
+  file.rewind(); //back file start
 
-  //while (file.available() >= 98)
-  for(i=0;i<10000;i++)
+  buffer = file.readStringUntil('/n');
+   midiApplication->x_count = buffer.toFloat();
+
+  int i = 0;
+
+  bool flag_read=true;
+  while(flag_read)
   {
-        
-    
-    buffer = file.readStringUntil('/n');    
-    
-    midiApplication->time1s[i]=buffer.toFloat();
 
-    buffer = file.readStringUntil('/n');    
-    
-    midiApplication->command1s[i]=buffer.toInt();
+    buffer = file.readStringUntil('/n');
 
-    Serial.println(midiApplication->time1s[i]);
-    Serial.println(midiApplication->command1s[i]);
-    
-    
-    if(buffer.toInt()==98){
-     // midiApplication->sd_cardtrk1=true;
-      midiApplication->data_trk_1=true;
-      midiApplication->x_count = 1.0;
-      midiApplication->inst1=midiApplication->command1s[1]>>24 & 0x000000FF;
+    midiApplication->time1s[i] = buffer.toFloat();
+
+    buffer = file.readStringUntil('/n');
+
+    midiApplication->command1s[i] = buffer.toInt();
+
+    //Serial.println(midiApplication->time1s[i]);
+    //Serial.println(midiApplication->command1s[i]);
+
+    if (buffer.toInt() == 98)
+    {
+      // midiApplication->sd_cardtrk1=true;
+      midiApplication->data_trk_1 = true;
+      //midiApplication->x_count = 1.0;
+      midiApplication->inst1 = midiApplication->command1s[1] >> 24 & 0x000000FF;
       Serial.println(midiApplication->inst1);
       midiApplication->inst = midiApplication->inst1;
-      midiApplication->command=192; 
+      midiApplication->command = 192;
       midiApplication->sendProgramChange();
-      
+      flag_read=false;
 
-    break;
-
+      break;
     }
-    
+    i++;
   }
- 
-  
+
   //******************************************************
   file.close();
   Serial.println(F("Done"));
   return;
+  
+}
+
+//===================================================================================
+void filewrite_trk2()
+{
+   if(midiApplication->command2s[1] >0){
+  // Initialize the SD.
+  if (!sd.begin(SD_CONFIG))
+  {
+    sd.initErrorHalt(&Serial);
+    return;
+  }
+  // Remove any existing file.
+  if (sd.exists("sdtrk2.cvs"))
+  {
+    sd.remove("sdtrk2.cvs");
+  }
+  // Create the file.
+  if (!file.open("sdtrk2.cvs", FILE_WRITE))
+  {
+    error("open failed");
+  }
+
+  //==============writetofilesd=================================
+  file.print(midiApplication->tempotrk2);
+    file.println("/n");
+  int i=0;
+  bool flag_write = true;
+  while (flag_write) 
+  {
+     Serial.println(midiApplication->time2s[i]);
+     Serial.println(midiApplication->command2s[i]);
+    //this->x_count = midiApplication->tempo;
+     
+
+    file.print(midiApplication->time2s[i]);
+    file.println("/n");
+
+    file.print(midiApplication->command2s[i]);
+    file.println("/n");
+
+    //Serial.println(midiApplication->command1s[i]);
+   
+    if (midiApplication->command2s[i] == 98)
+    {
+      flag_write = false;
+      break;
+    }
+   i++;
+  }
+
+  file.close();
+  Serial.println(F("Done"));
+  return;
+   }
+}
+//======================readfile===========================================
+void readfile_trk2()
+{
+ 
+  String buffer;
+
+  // Initialize the SD.
+  if (!sd.begin(SD_CONFIG))
+  {
+    sd.initErrorHalt(&Serial);
+    return;
+  }
+
+  if (!file.open("sdtrk2.cvs", FILE_WRITE))
+  {
+    error("open failed");
+  }
+
+  //*************************************************************
+  file.rewind(); //back file start
+
+  buffer = file.readStringUntil('/n');
+   midiApplication->x_count = buffer.toFloat();
+
+  int i = 0;
+
+  bool flag_read=true;
+  while(flag_read)
+  {
+
+    buffer = file.readStringUntil('/n');
+
+    midiApplication->time2s[i] = buffer.toFloat();
+
+    buffer = file.readStringUntil('/n');
+
+    midiApplication->command2s[i] = buffer.toInt();
+
+    Serial.println(midiApplication->time2s[i]);
+    Serial.println(midiApplication->command2s[i]);
+
+    if (buffer.toInt() == 98)
+    {
+      // midiApplication->sd_cardtrk1=true;
+      midiApplication->data_trk_2 = true;
+      //midiApplication->x_count = 1.0;
+      midiApplication->inst2 = midiApplication->command2s[1] >> 24 & 0x000000FF;
+      Serial.println(midiApplication->inst2);
+      midiApplication->inst = midiApplication->inst2;
+      midiApplication->command = 193;
+      midiApplication->sendProgramChange();
+      flag_read=false;
+
+      break;
+    }
+    i++;
+  }
+
+  //******************************************************
+  file.close();
+  Serial.println(F("Done"));
+  return;
+  
+}
+//==================================================================
+void filewrite_trk3()
+{
+   if(midiApplication->command3s[1] >0){
+  // Initialize the SD.
+  if (!sd.begin(SD_CONFIG))
+  {
+    sd.initErrorHalt(&Serial);
+    return;
+  }
+  // Remove any existing file.
+  if (sd.exists("sdtrk3.cvs"))
+  {
+    sd.remove("sdtrk3.cvs");
+  }
+  // Create the file.
+  if (!file.open("sdtrk3.cvs", FILE_WRITE))
+  {
+    error("open failed");
+  }
+
+  //==============writetofilesd=================================
+  file.print(midiApplication->tempotrk3);
+    file.println("/n");
+  int i=0;
+  bool flag_write = true;
+  while (flag_write) 
+  {
+    // Serial.println(midiApplication->time1s[i]);
+    // Serial.println(midiApplication->command1s[i]);
+    //this->x_count = midiApplication->tempo;
+     
+
+    file.print(midiApplication->time3s[i]);
+    file.println("/n");
+
+    file.print(midiApplication->command3s[i]);
+    file.println("/n");
+
+    //Serial.println(midiApplication->command1s[i]);
+   
+    if (midiApplication->command3s[i] == 98)
+    {
+      flag_write = false;
+      break;
+    }
+   i++;
+  }
+
+  file.close();
+  Serial.println(F("Done"));
+  return;
+   }
+}
+//======================readfile===========================================
+void readfile_trk3()
+{
+ 
+  String buffer;
+
+  // Initialize the SD.
+  if (!sd.begin(SD_CONFIG))
+  {
+    sd.initErrorHalt(&Serial);
+    return;
+  }
+
+  if (!file.open("sdtrk3.cvs", FILE_WRITE))
+  {
+    error("open failed");
+  }
+
+  //*************************************************************
+  file.rewind(); //back file start
+
+  buffer = file.readStringUntil('/n');
+   midiApplication->x_count = buffer.toFloat();
+
+  int i = 0;
+
+  bool flag_read=true;
+  while(flag_read)
+  {
+
+    buffer = file.readStringUntil('/n');
+
+    midiApplication->time3s[i] = buffer.toFloat();
+
+    buffer = file.readStringUntil('/n');
+
+    midiApplication->command3s[i] = buffer.toInt();
+
+    //Serial.println(midiApplication->time1s[i]);
+    //Serial.println(midiApplication->command1s[i]);
+
+    if (buffer.toInt() == 98)
+    {
+      // midiApplication->sd_cardtrk1=true;
+      midiApplication->data_trk_3 = true;
+      //midiApplication->x_count = 1.0;
+      midiApplication->inst3 = midiApplication->command3s[1] >> 24 & 0x000000FF;
+      Serial.println(midiApplication->inst3);
+      midiApplication->inst = midiApplication->inst3;
+      midiApplication->command = 194;
+      midiApplication->sendProgramChange();
+      flag_read=false;
+
+      break;
+    }
+    i++;
+  }
+
+  //******************************************************
+  file.close();
+  Serial.println(F("Done"));
+  return;
+  
+}
+
+//===================================filetrk5======================================
+
+void filewrite_trk5()
+{
+   if(midiApplication->commandTrk5[1] >0){
+  // Initialize the SD.
+  if (!sd.begin(SD_CONFIG))
+  {
+    sd.initErrorHalt(&Serial);
+    return;
+  }
+  // Remove any existing file.
+  if (sd.exists("sdtrk5.cvs"))
+  {
+    sd.remove("sdtrk5.cvs");
+  }
+  // Create the file.
+  if (!file.open("sdtrk5.cvs", FILE_WRITE))
+  {
+    error("open failed");
+  }
+
+  //==============writetofilesd=================================
+  file.print(midiApplication->tempotrk5);
+    file.println("/n");
+  int i=0;
+  bool flag_write = true;
+  while (flag_write) 
+  {
+    // Serial.println(midiApplication->time1s[i]);
+    // Serial.println(midiApplication->command1s[i]);
+
+    file.print(midiApplication->timeTrk5[i]);
+    file.println("/n");
+
+    file.print(midiApplication->commandTrk5[i]);
+    file.println("/n");
+
+    //Serial.println(midiApplication->command1s[i]);
+   
+    if (midiApplication->commandTrk5[i] == 99)
+    {
+      flag_write = false;
+      break;
+    }
+   i++;
+  }
+
+  file.close();
+  Serial.println(F("Done"));
+  return;
+   }
+}
+//======================readfiletrk5===========================================
+void readfile_trk5()
+{
+ 
+  String buffer;
+
+  // Initialize the SD.
+  if (!sd.begin(SD_CONFIG))
+  {
+    sd.initErrorHalt(&Serial);
+    return;
+  }
+
+  if (!file.open("sdtrk5.cvs", FILE_WRITE))
+  {
+    error("open failed");
+  }
+
+  //*************************************************************
+  file.rewind(); //back file start
+  buffer = file.readStringUntil('/n');
+   midiApplication->x_count = buffer.toFloat();
+
+  int i = 0;
+
+  bool flag_read=true;
+  while(flag_read)
+  {
+
+    buffer = file.readStringUntil('/n');
+
+    midiApplication->timeTrk5[i] = buffer.toFloat();
+
+    buffer = file.readStringUntil('/n');
+
+    midiApplication->commandTrk5[i] = buffer.toInt();
+
+    //  Serial.println(midiApplication->timeTrk5[i]);
+    // Serial.println(midiApplication->commandTrk5[i]);
+
+    if (buffer.toInt() == 99)
+    {
+      // midiApplication->sd_cardtrk1=true;
+      midiApplication->data_Trk5 = true;
+     // midiApplication->x_count = 1.0;
+     // midiApplication->inst1 = midiApplication->commandTrk5[1] >> 24 & 0x000000FF;
+     // Serial.println(midiApplication->inst1);
+     // midiApplication->inst = midiApplication->inst1;
+     // midiApplication->command = 192;
+     // midiApplication->sendProgramChange();
+      flag_read=false;
+
+      break;
+    }
+    i++;
+  }
+
+  //******************************************************
+  file.close();
+  Serial.println(F("Done"));
+  return;
+  
 }
